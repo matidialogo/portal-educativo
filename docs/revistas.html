@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Revistas - Portal Educativo</title>
+    <style>
+        /* Estilos base (mismos que antes) */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        
+        h1 {
+            color: #764ba2;
+            margin-bottom: 10px;
+        }
+        
+        /* Barra de búsqueda */
+        .buscador-container {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .buscador-container h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+        
+        .buscador-input {
+            width: 100%;
+            padding: 15px 20px;
+            font-size: 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 30px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        
+        .buscador-input:focus {
+            border-color: #667eea;
+        }
+        .buscador-input::placeholder {
+    color: #bbb;
+    opacity: 1;
+}
+        .filtros-activos {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .tag-filtro {
+            background: #667eea;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .tag-filtro:hover {
+            background: #764ba2;
+        }
+        
+        /* Resultados */
+        .resultados-info {
+            color: #666;
+            margin-bottom: 20px;
+            font-style: italic;
+        }
+        
+        .revista-list {
+            display: grid;
+            gap: 15px;
+        }
+        
+        .revista-item {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            transition: all 0.3s;
+            border-left: 4px solid transparent;
+        }
+        
+        .revista-item:hover {
+            transform: translateX(5px);
+            border-left-color: #667eea;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+        }
+        
+        .revista-item.oculto {
+            display: none;
+        }
+        
+        .revista-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .revista-titulo {
+            color: #667eea;
+            font-size: 1.3rem;
+            margin: 0;
+        }
+        
+        .revista-meta {
+            color: #888;
+            font-size: 0.9rem;
+        }
+        
+        .revista-descripcion {
+            color: #555;
+            margin: 10px 0;
+            line-height: 1.6;
+        }
+        
+        .temas-container {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin: 15px 0;
+        }
+        
+        .tema-tag {
+            background: #f0f0f0;
+            color: #666;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .tema-tag:hover {
+            background: #667eea;
+            color: white;
+        }
+        
+        .btn-descargar {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 10px 25px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .btn-descargar:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .sin-resultados {
+            text-align: center;
+            padding: 60px 20px;
+            color: #888;
+        }
+        
+        .sin-resultados-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+        
+        /* Responsive */
+        @media (max-width: 600px) {
+            .revista-header {
+                flex-direction: column;
+            }
+        }
+            /* ... todo tu CSS existente sigue acá ... */
+    
+    /* NUEVO: Estilos para los botones Ver/Descargar */
+    .acciones-pdf {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 15px;
+    }
+
+    .btn-ver {
+        background: #f0f0f0;
+        color: #555;
+        padding: 10px 20px;
+        border-radius: 25px;
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s;
+        border: 2px solid #ddd;
+    }
+
+    .btn-ver:hover {
+        background: #667eea;
+        color: white;
+        border-color: #667eea;
+    }
+
+    .btn-descargar {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 10px 20px;
+        border-radius: 25px;
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s;
+    }
+
+    .btn-descargar:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    }
+</style>
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-link">← Volver al inicio</a>
+        
+        <h1>📰 Revista Dialogo entre Educadores</h1>
+        <p style="margin-bottom: 25px; color: #666;">Colección completa con búsqueda por título, contenido o temas</p>
+        
+        <!-- Buscador -->
+        <div class="buscador-container">
+            <h2>🔍 Buscar en la colección</h2>
+            <input 
+                type="text" 
+                id="buscador" 
+                class="buscador-input" 
+                placeholder="Escribe aquí el tema de interes"
+            >
+            <div class="filtros-activos" id="filtrosActivos"></div>
+        </div>
+        
+        <!-- Info de resultados -->
+        <div class="resultados-info" id="resultadosInfo"></div>
+        
+        <!-- Lista de revistas -->
+        <div class="revista-list" id="listaRevistas">
+            <!-- Las revistas se cargan desde JavaScript -->
+        </div>
+        
+        <div class="sin-resultados" id="sinResultados" style="display: none;">
+            <div class="sin-resultados-icon">🔍</div>
+            <h3>No se encontraron revistas</h3>
+            <p>Prueba con otros términos o revisa la ortografía</p>
+        </div>
+    </div>
+
+    <script>
+        // 📚 BASE DE DATOS DE REVISTAS
+        // Aquí agregas cada número de tu revista
+        const revistas = [
+    {
+        numero: 22,
+        titulo: "Educación y Comunidad",
+        anio: 2024,
+        mes: "Diciembre",        // ← NUEVO
+        paginas: 48,             // ← NUEVO
+        descripcion: "Experiencias de educación popular en barrios y comunidades. Construcción colectiva de conocimiento.",
+        temas: ["comunidad", "educación popular", "barrios", "participación"],
+        archivo: "revistas/22.pdf"
+    },
+    {
+        numero: 21,
+        titulo: "Memoria e Identidad",
+        anio: 2024,
+        mes: "Septiembre",       // ← NUEVO
+        paginas: 52,             // ← NUEVO
+        descripcion: "Recuperación de memorias populares, archivos comunitarios y transmisión generacional.",
+        temas: ["memoria", "identidad", "archivos", "historia"],
+        archivo: "revistas/21.pdf"
+    },
+    {
+        numero: 18,
+        titulo: "Economía Solidaria",
+        anio: 2023,
+        mes: "Junio",            // ← NUEVO
+        paginas: 44,             // ← NUEVO
+        descripcion: "Cooperativas, trueque y pedagogías económicas alternativas.",
+        temas: ["economía solidaria", "cooperativas", "trueque"],
+        archivo: "revistas/18.pdf"
+    },
+    {
+        numero: 17,
+        titulo: "Arte y Transformación Social",
+        anio: 2023,
+        mes: "Marzo",            // ← NUEVO
+        paginas: 50,             // ← NUEVO
+        descripcion: "Teatro, muralismo y música como herramientas de educación popular.",
+        temas: ["arte", "teatro", "muralismo", "cultura popular"],
+        archivo: "revistas/17.pdf"
+    },
+    {
+        numero: 16,
+        titulo: "Salud Comunitaria",
+        anio: 2023,
+        mes: "Diciembre",        // ← NUEVO
+        paginas: 36,             // ← NUEVO
+        descripcion: "Medicina popular, cuidados colectivos y promoción de salud.",
+        temas: ["salud", "medicina popular", "cuidados", "comunitaria"],
+        archivo: "revistas/16.pdf"
+    },
+    {
+        numero: 15,
+        titulo: "Tecnología y Educación",
+        anio: 2023,
+        mes: "Septiembre",       // ← NUEVO
+        paginas: 48,             // ← NUEVO
+        descripcion: "Software libre, soberanía tecnológica y herramientas digitales.",
+        temas: ["tecnología", "software libre", "soberanía digital"],
+        archivo: "revistas/15.pdf"
+    }
+];
+
+        // 🎯 VARIABLES GLOBALES
+        let filtroActual = '';
+        let filtroTema = '';
+
+        // 🚀 INICIALIZAR
+        document.addEventListener('DOMContentLoaded', function() {
+            renderizarRevistas(revistas);
+            
+            // Event listener para el buscador
+            document.getElementById('buscador').addEventListener('input', function(e) {
+                filtroActual = e.target.value.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+                aplicarFiltros();
+            });
+        });
+
+        // 📋 RENDERIZAR LISTA
+        function renderizarRevistas(lista) {
+            const contenedor = document.getElementById('listaRevistas');
+            const sinResultados = document.getElementById('sinResultados');
+            const infoResultados = document.getElementById('resultadosInfo');
+            
+            contenedor.innerHTML = '';
+            
+            if (lista.length === 0) {
+                sinResultados.style.display = 'block';
+                infoResultados.textContent = '';
+                return;
+            }
+            
+            sinResultados.style.display = 'none';
+            infoResultados.textContent = `Mostrando ${lista.length} de ${revistas.length} revistas`;
+            
+            lista.forEach(rev => {
+                const item = document.createElement('div');
+                item.className = 'revista-item';
+                
+                    item.innerHTML = `
+    <div class="revista-header">
+        <div>
+            <h3 class="revista-titulo">N° ${rev.numero} - ${rev.titulo}</h3>
+            <span class="revista-meta">📅 ${rev.mes} ${rev.anio} | 📄 ${rev.paginas} páginas</span>
+        </div>
+    </div>
+    <p class="revista-descripcion">${rev.descripcion}</p>
+    <div class="temas-container">
+        ${rev.temas.map(tema => `
+            <span class="tema-tag" onclick="filtrarPorTema('${tema}')">${tema}</span>
+        `).join('')}
+    </div>
+    <div class="acciones-pdf">
+        <a href="${rev.archivo}" class="btn-ver" target="_blank">👁️ Ver online</a>
+        <a href="${rev.archivo}" class="btn-descargar" download>📥 Descargar</a>
+    </div>
+`;
+                contenedor.appendChild(item);
+            });
+        }
+
+        // 🔍 APLICAR FILTROS
+        function aplicarFiltros() {
+            const filtradas = revistas.filter(rev => {
+                // Normalizar texto para búsqueda (sin tildes, minúsculas)
+                const titulo = rev.titulo.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+                const descripcion = rev.descripcion.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+                const temas = rev.temas.map(t => t.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, ''));
+                
+                // Busca en título, descripción O temas
+                const coincideBusqueda = !filtroActual || 
+                    titulo.includes(filtroActual) || 
+                    descripcion.includes(filtroActual) ||
+                    temas.some(t => t.includes(filtroActual));
+                
+                // Filtra por tema específico si hay uno activo
+                const coincideTema = !filtroTema || 
+                    rev.temas.some(t => t.toLowerCase() === filtroTema.toLowerCase());
+                
+                return coincideBusqueda && coincideTema;
+            });
+            
+            renderizarRevistas(filtradas);
+            actualizarFiltrosActivos();
+        }
+
+        // 🏷️ FILTRAR POR TEMA (al hacer clic en un tag)
+        function filtrarPorTema(tema) {
+            filtroTema = tema;
+            document.getElementById('buscador').value = ''; // Limpia búsqueda de texto
+            filtroActual = '';
+            aplicarFiltros();
+        }
+
+        // ❌ QUITAR FILTRO DE TEMA
+        function quitarFiltroTema() {
+            filtroTema = '';
+            aplicarFiltros();
+        }
+
+        // 🎨 ACTUALIZAR UI DE FILTROS
+        function actualizarFiltrosActivos() {
+            const contenedor = document.getElementById('filtrosActivos');
+            
+            if (!filtroTema) {
+                contenedor.innerHTML = '';
+                return;
+            }
+            
+            contenedor.innerHTML = `
+                <span class="tag-filtro" onclick="quitarFiltroTema()">
+                    Tema: ${filtroTema} ✕
+                </span>
+            `;
+        }
+    </script>
+</body>
+</html>
